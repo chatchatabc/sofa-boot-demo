@@ -18,9 +18,70 @@ transparent transmission, and fault removal.
 
 # Project Structure
 
-* service-api: service interface contract definition
-* provider: service implementation
-* consumer: service consumer
+### service-api
+
+Service interface contract definition
+
+```java
+public interface UserServiceFacade {
+    User findById(Long id);
+}
+```
+
+### Service Provider
+
+Implement service interface and expose service to registry server by `@SofaService` annotation.
+
+```java
+
+@Service
+@SofaService(interfaceType = UserServiceFacade.class, bindings = {@SofaServiceBinding(bindingType = "bolt")})
+public class UserServiceFacadeImpl implements UserServiceFacade {
+    @Override
+    public User findById(Long id) {
+        User user = new User();
+        user.setId(id);
+        user.setNick("linux_china");
+        return user;
+    }
+}
+```
+
+### Service Consumer
+
+There 2 ways to refer remote service:
+
+* `@SofaReference` annotation: good for beginners
+
+```java
+
+@RestController
+public class PortalController {
+    @SofaReference(binding = @SofaReferenceBinding(bindingType = "bolt"))
+    private UserServiceFacade userServiceFacade;
+}
+
+```
+
+* XML declaration: good for unit test and maintain
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:sofa="http://sofastack.io/schema/sofaboot"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://sofastack.io/schema/sofaboot
+            http://sofastack.io/schema/sofaboot.xsd"
+       default-autowire="byName">
+
+    <sofa:reference id="userServiceFacade" interface="com.chatchatabc.user.UserServiceFacade">
+        <sofa:binding.bolt/>
+    </sofa:reference>
+
+</beans>
+```
 
 # Get Started
 
@@ -29,12 +90,8 @@ transparent transmission, and fault removal.
 * Start Service Consumer: `SofaBootServiceConsumer`
 * Test REST API with Sofa RPC call: `curl http://localhost:9080/user/1`
 
-# Architecture
-
-* Service Registry: Zookeeper with Curator 4.3.0
-
 # References
- 
+
 * SOFAStack: https://www.sofastack.tech/en/
 * SOFABoot: https://www.sofastack.tech/en/projects/sofa-boot/overview/
 * SOFARPC: https://www.sofastack.tech/en/projects/sofa-rpc/overview/
