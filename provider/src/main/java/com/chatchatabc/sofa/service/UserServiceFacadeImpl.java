@@ -6,7 +6,7 @@ import com.chatchatabc.user.User;
 import com.chatchatabc.user.UserServiceFacade;
 import org.springframework.stereotype.Service;
 
-@Service(value = "userServiceFacade")
+@Service
 @SofaService(interfaceType = UserServiceFacade.class, bindings = {@SofaServiceBinding(bindingType = "bolt")})
 public class UserServiceFacadeImpl implements UserServiceFacade {
     @Override
