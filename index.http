@@ -1,0 +1,7 @@
+GET  http://localhost:9081/actuator/versions
+
+### health
+GET http://localhost:9081/actuator/health
+
+### Sofa RPC test
+GET http://localhost:9080/user/1
